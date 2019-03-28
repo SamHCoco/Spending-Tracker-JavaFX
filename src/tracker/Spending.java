@@ -58,7 +58,7 @@ public class Spending {
                 monthSpendingTotal += Double.valueOf(records.get(i).getAmount());
             }
         }
-        return String.format("%.2f", monthSpendingTotal);
+        return String.valueOf(monthSpendingTotal);
     }
 
     public static String calculateWeekTotal(ArrayList<Spending> records){
@@ -74,7 +74,7 @@ public class Spending {
                 weekTotal += Double.valueOf(records.get(i).getAmount());
             }
         }
-        return String.format("%.2f", weekTotal);
+        return String.valueOf(weekTotal);
     }
 
     public static double[] categoryTotals(ArrayList<Spending> records){
