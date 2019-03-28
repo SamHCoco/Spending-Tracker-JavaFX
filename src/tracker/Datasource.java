@@ -63,6 +63,18 @@ public class Datasource {
         openDatabase();
         try(Statement statement = connection.createStatement()){
             statement.execute("DELETE FROM " + TABLE_NAME + " WHERE " + ID_COLUMN + "=" + _id);
+
+            // updates records so all IDs are +1 from their preceding ID (important for deleting records in TableView)
+            ResultSet records = statement.executeQuery("SELECT * " + " FROM " + TABLE_NAME);
+            ArrayList<Integer> oldIDs = new ArrayList<>();
+            while(records.next()){
+                oldIDs.add(records.getInt(ID_COLUMN));
+            }
+            for(int i=1; i < oldIDs.size()+1; i++) {
+                statement.execute("UPDATE " + TABLE_NAME + " SET " + ID_COLUMN + "=" + i
+                                    + " WHERE " + ID_COLUMN + "=" + oldIDs.get(i-1));
+            }
+
         } catch(SQLException e){
             System.out.println("ERROR DELETING RECORD: SQL EXCEPTION");
         }
@@ -83,6 +95,7 @@ public class Datasource {
                 spent.setCategory(result.getString(CATEGORY_COLUMN));
                 spendings.add(spent);
             }
+            result.close();
             return spendings;
         } catch(SQLException e){
             System.out.println("ERROR QUERYING RECORDS" + e.getMessage());
