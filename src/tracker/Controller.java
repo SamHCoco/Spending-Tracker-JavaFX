@@ -8,8 +8,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -64,13 +64,28 @@ public class Controller implements Initializable {
     private PieChart pieChart;
 
     @FXML
-    private ContextMenu editTable;
-
-    @FXML
     private MenuItem editOption;
 
     @FXML
     private MenuItem deleteOption;
+
+    @FXML
+    private Label foodTotalLabel;
+
+    @FXML
+    private Label leisureTotalLabel;
+
+    @FXML
+    private Label housingTotalLabel;
+
+    @FXML
+    private Label transportTotalLabel;
+
+    @FXML
+    private Label miscTotalLabel;
+
+    @FXML
+    private Label clothingTotalLabel;
 
     private static int tableRow;
 
@@ -79,6 +94,8 @@ public class Controller implements Initializable {
     private static Datasource data;
 
     private static ArrayList<Spending> records;
+
+    private static double[] categoryTotals;
 
 
    // Runs when program first initialized
@@ -89,10 +106,12 @@ public class Controller implements Initializable {
         initializeApp();
     }
 
+    // re-initializes the application to reflect user created changes
     public void initializeApp(){
         records = data.querySpending();
+        categoryTotals = Spending.categoryTotals(records);
         displaySpendingInfo();
-        loadPieChart(Spending.categoryTotals(records));
+        loadPieChart(categoryTotals);
     }
 
     /*
@@ -106,7 +125,6 @@ public class Controller implements Initializable {
 
     @FXML
     public void onButtonClick(ActionEvent event){
-
         if(event.getSource() == foodBtn){
             category = "FOOD";
         } else if(event.getSource() == leisureBtn){
@@ -130,17 +148,18 @@ public class Controller implements Initializable {
     @FXML
     public void onMenuItemClick(ActionEvent event){
         if(event.getSource() == editOption){
-            System.out.println("EDIT IN PROGRESS");
+            System.out.println("EDIT IN PROGRESS"); // FOR DEBUGGING TO BE DELETED
         } else if(event.getSource() == deleteOption){
             System.out.println("DELETE IN PROGRESS"); // FOR DEBUGGING TO BE DELETED
             // gets the row of the currently clicked on entry in table-view
-            tableRow = spendingTable.getSelectionModel().selectedIndexProperty().get() + 1;//+1 as IDs begin at 1 in SQL
-            System.out.println("tableRow: " + tableRow);
+            tableRow = spendingTable.getSelectionModel().selectedIndexProperty().get() + 1;//+1 as IDs begin at 1 in BD
+            System.out.println("tableRow: " + tableRow); // FOR DEBUGGING TO BE DELETED
             deleteRecord(tableRow);
             initializeApp();
         }
     }
 
+    // deletes a single row in database table
     public void deleteRecord(int _id){
         data.deleteRecord(_id);
     }
@@ -150,7 +169,7 @@ public class Controller implements Initializable {
         if(!input.equals("")){
             try{
                 double inputValue = Double.parseDouble(input);
-                if(inputValue > 0){
+                if(inputValue > 0 && inputValue < 10_000){
                     data.insertRecord(new Spending(String.format("%.2f", inputValue), category));
                     displaySpendingInfo();
                     category = null; // to wait for users next choice
@@ -162,9 +181,19 @@ public class Controller implements Initializable {
         }
     }
 
+    // displays summary statistics of spending to the user
     public void displaySpendingInfo(){
-        weekTotal.setText("£" + Spending.calculateWeekTotal(records));
-        monthTotal.setText("£" + Spending.calculateMonthTotal(records));
+        DecimalFormat df = new DecimalFormat("###,##0.00");
+        weekTotal.setText("£" + df.format(Double.valueOf(Spending.calculateWeekTotal(records))));
+        monthTotal.setText("£" + df.format(Double.valueOf(Spending.calculateWeekTotal(records))));
+
+        foodTotalLabel.setText("FOOD: £" +  df.format(categoryTotals[0]));
+        leisureTotalLabel.setText("LEISURE: £" +  df.format(categoryTotals[1]));
+        transportTotalLabel.setText("TRANSPORT: £" +  df.format(categoryTotals[2]));
+        clothingTotalLabel.setText("CLOTHING: £" +  df.format(categoryTotals[3]));
+        housingTotalLabel.setText("HOUSING: £" +  df.format(categoryTotals[4]));
+        miscTotalLabel.setText("MISC: £" +  df.format(categoryTotals[5]));
+
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("recordDate"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
         categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
@@ -174,19 +203,16 @@ public class Controller implements Initializable {
     public void loadPieChart(double[] categoryTotal){
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
         String[] category = {"FOOD", "LEISURE", "TRANSPORT", "CLOTHING", "HOUSING", "MISC."};
-        double monthTotal = Double.valueOf(Spending.calculateWeekTotal(records));
+        double monthTotal = Double.valueOf(Spending.calculateMonthTotal(records));
         String[] categoryPercent = Spending.categoryPercents(categoryTotal, monthTotal);
 
         for(int i = 0; i < categoryTotal.length; i++){
             if(categoryTotal[i] > 0){
-                pieChartData.add(
-                        new PieChart.Data(category[i] + " (" + categoryPercent[i] + "%)", categoryTotal[i])
-                );
+                pieChartData.add(new PieChart.Data(category[i] + " (" + categoryPercent[i] + "%)", categoryTotal[i]));
             }
         }
         pieChart.setData(pieChartData);
-        pieChart.setLabelsVisible(true);
-
+        pieChart.setLegendVisible(false);
     }
 
 }
