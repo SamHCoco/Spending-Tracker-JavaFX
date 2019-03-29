@@ -61,8 +61,8 @@
             <contextMenu>
                 <ContextMenu>
                     <items>
-                        <MenuItem fx:id="editOption" onAction="#onMenuItemClick" text="Edit" />
-                        <MenuItem fx:id="deleteOption" onAction="#onMenuItemClick" text="Delete" />
+                        <MenuItem fx:id="deleteOption" onAction="#onMenuItemClick" text="Delete"
+                        style="-fx-font-size: 14px"/>
                     </items>
                 </ContextMenu>
             </contextMenu>
