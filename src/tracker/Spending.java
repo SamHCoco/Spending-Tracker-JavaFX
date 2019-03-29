@@ -10,7 +10,12 @@ public class Spending {
 
     // Constructor for querying records
     public Spending(int weekOfMonth){
-        this.date = new Date(weekOfMonth);
+        date = new Date(weekOfMonth);
+    }
+
+    // Constructor used in algorithm for automatically deleting records
+    public Spending(String numericDate, int weekOfMonth){
+        date = new Date(numericDate, weekOfMonth);
     }
 
     // Constructor for adding records
