@@ -8,18 +8,25 @@ public class Date {
     private int month;
     private int year;
     private int weekOfMonth;
+    private String numericDate;
 
     public Date(int weekOfMonth){
         this.weekOfMonth = weekOfMonth;
     }
 
+    // constructor used in algorithm for automatically deleting records
+    public Date(String numericDate, int weekOfMonth){
+        this.numericDate = numericDate;
+        this.weekOfMonth = weekOfMonth;
+    }
+
     public Date(){
-        Calendar calender = Calendar.getInstance();
-        day = calender.get(Calendar.DAY_OF_WEEK);
-        date = calender.get(Calendar.DATE);
-        month = calender.get(Calendar.MONTH) + 1; // Jan = 0
-        year = calender.get(Calendar.YEAR);
-        weekOfMonth = calender.get(Calendar.WEEK_OF_MONTH);
+        Calendar calendar = Calendar.getInstance();
+        day = calendar.get(Calendar.DAY_OF_WEEK);
+        date = calendar.get(Calendar.DATE);
+        month = calendar.get(Calendar.MONTH) + 1; // Jan = 0
+        year = calendar.get(Calendar.YEAR);
+        weekOfMonth = calendar.get(Calendar.WEEK_OF_MONTH);
     }
 
 
@@ -61,6 +68,18 @@ public class Date {
      */
     public String numericDate(){
         return date + "-" +  formatMonth() + "-" + year;
+    }
+
+    /**
+     * String slices numeric date (e.g. 20-06-17) to extract the month
+     * @return Month of a numeric date (e.g. 6 if numericDate = 20-06-17)
+     */
+    public Integer numericDateMonth(){
+        if(numericDate.substring(3).equals("0")){
+            return Integer.valueOf(numericDate.substring(4));
+        } else {
+            return Integer.valueOf(numericDate.substring(3,5));
+        }
     }
 
     /**
