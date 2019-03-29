@@ -64,9 +64,6 @@ public class Controller implements Initializable {
     private PieChart pieChart;
 
     @FXML
-    private MenuItem editOption;
-
-    @FXML
     private MenuItem deleteOption;
 
     @FXML
@@ -87,8 +84,6 @@ public class Controller implements Initializable {
     @FXML
     private Label clothingTotalLabel;
 
-    private static int tableRow;
-
     private static String category;
 
     private static Datasource data;
@@ -98,7 +93,7 @@ public class Controller implements Initializable {
     private static double[] categoryTotals;
 
 
-   // Runs when program first initialized
+   // runs when program first initialized
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         dateDisplay.setText(new Date().stringDate());
@@ -108,21 +103,21 @@ public class Controller implements Initializable {
 
     // re-initializes the application to reflect user created changes
     public void initializeApp(){
+        data.deleteOlderRecords();
         records = data.querySpending();
         categoryTotals = Spending.categoryTotals(records);
         displaySpendingInfo();
         loadPieChart(categoryTotals);
     }
 
-    /*
-    creating observable list which will be passed to list view to display in TableView
-     */
+    // creates observable list which will be passed to list view to display in TableView
     public ObservableList<Spending> fetchRecords(ArrayList<Spending> records){
         ObservableList<Spending> spending = FXCollections.observableArrayList();
         spending.addAll(records);
         return spending;
     }
 
+    // handles clicking buttons of user interface
     @FXML
     public void onButtonClick(ActionEvent event){
         if(event.getSource() == foodBtn){
@@ -145,15 +140,13 @@ public class Controller implements Initializable {
         }
     }
 
+    // handles deleting record when clicking TableView 'Delete' menu item
     @FXML
     public void onMenuItemClick(ActionEvent event){
-        if(event.getSource() == editOption){
-            System.out.println("EDIT IN PROGRESS"); // FOR DEBUGGING TO BE DELETED
-        } else if(event.getSource() == deleteOption){
-            System.out.println("DELETE IN PROGRESS"); // FOR DEBUGGING TO BE DELETED
+        if(event.getSource() == deleteOption){
+            int tableRow;
             // gets the row of the currently clicked on entry in table-view
             tableRow = spendingTable.getSelectionModel().selectedIndexProperty().get() + 1;//+1 as IDs begin at 1 in BD
-            System.out.println("tableRow: " + tableRow); // FOR DEBUGGING TO BE DELETED
             deleteRecord(tableRow);
             initializeApp();
         }
@@ -165,14 +158,17 @@ public class Controller implements Initializable {
     }
 
     public void insertRecord(){
+        double total = Double.valueOf(Spending.calculateMonthTotal(records));
         String input = userInput.getText();
         if(!input.equals("")){
             try{
                 double inputValue = Double.parseDouble(input);
-                if(inputValue > 0 && inputValue < 10_000){
+                if(inputValue > 0 && inputValue <= 100_000 && total + inputValue <= 100_000){
                     data.insertRecord(new Spending(String.format("%.2f", inputValue), category));
                     displaySpendingInfo();
                     category = null; // to wait for users next choice
+                } else {
+                    userInput.setText("INVALID INPUT");
                 }
             } catch(NumberFormatException e){
                 System.out.println("ERROR INSERTING RECORD:");
@@ -200,6 +196,7 @@ public class Controller implements Initializable {
         spendingTable.getItems().setAll(fetchRecords(records));
     }
 
+    // feeds pie chart data into pie chart
     public void loadPieChart(double[] categoryTotal){
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
         String[] category = {"FOOD", "LEISURE", "TRANSPORT", "CLOTHING", "HOUSING", "MISC."};
@@ -214,5 +211,6 @@ public class Controller implements Initializable {
         pieChart.setData(pieChartData);
         pieChart.setLegendVisible(false);
     }
+
 
 }
