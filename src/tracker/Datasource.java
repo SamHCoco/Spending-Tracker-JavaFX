@@ -1,6 +1,7 @@
 package tracker;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Datasource {
     private Connection connection;
@@ -100,6 +101,32 @@ public class Datasource {
         } catch(SQLException e){
             System.out.println("ERROR QUERYING RECORDS" + e.getMessage());
             return null;
+        }
+    }
+
+    // deletes older unnecessary records
+    public void deleteOlderRecords(){
+        openDatabase();
+        try(Statement statement = connection.createStatement()){
+            ArrayList<Integer> deleteIDs = new ArrayList<>(); // IDs of records to be deleted
+            ResultSet records = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
+            Calendar calendar = Calendar.getInstance();
+            int currentMonth = calendar.get(Calendar.MONTH) + 1; // + 1 since Jan = 0
+
+            // stores the IDs of records to be deleted from database
+            while(records.next()){
+              Spending spent = new Spending(records.getString(DATE_COLUMN), records.getInt(MONTH_WEEK_COLUMN));
+              if(spent.getDate().numericDateMonth() < currentMonth && spent.getDate().getWeekOfMonth() <= 3){
+                  deleteIDs.add(records.getInt(ID_COLUMN));
+              }
+            }
+            // deletes old records
+            for(int i = 0; i < deleteIDs.size(); i++){
+                deleteRecord(deleteIDs.get(i));
+            }
+        } catch(SQLException e){
+            System.out.println("ERROR DELETING OLD RECORDS");
+            e.getMessage();
         }
     }
 }
