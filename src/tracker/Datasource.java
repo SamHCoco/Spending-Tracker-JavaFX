@@ -112,11 +112,15 @@ public class Datasource {
             ResultSet records = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
             Calendar calendar = Calendar.getInstance();
             int currentMonth = calendar.get(Calendar.MONTH) + 1; // + 1 since Jan = 0
+            int recordMonth;
+            int recordWeekOfMonth;
 
             // stores the IDs of records to be deleted from database
             while(records.next()){
               Spending spent = new Spending(records.getString(DATE_COLUMN), records.getInt(MONTH_WEEK_COLUMN));
-              if(spent.getDate().numericDateMonth() < currentMonth && spent.getDate().getWeekOfMonth() <= 3){
+              recordMonth =  spent.getDate().numericDateMonth();
+              recordWeekOfMonth = spent.getDate().getWeekOfMonth();
+              if(recordMonth < currentMonth && recordWeekOfMonth <= 3){
                   deleteIDs.add(records.getInt(ID_COLUMN));
               }
             }
