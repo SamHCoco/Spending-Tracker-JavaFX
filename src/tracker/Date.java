@@ -67,7 +67,7 @@ public class Date {
      * @return current date as a string, in numerical format, e.g 03-04-2019
      */
     public String numericDate(){
-        return date + "-" +  formatMonth() + "-" + year;
+        return formatDate() + "-" +  formatMonth() + "-" + year;
     }
 
     /**
