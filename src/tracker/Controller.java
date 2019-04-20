@@ -110,13 +110,6 @@ public class Controller implements Initializable {
         loadPieChart(categoryTotals);
     }
 
-    // creates observable list which will be passed to list view to display in TableView
-    public ObservableList<Spending> fetchRecords(ArrayList<Spending> records){
-        ObservableList<Spending> spending = FXCollections.observableArrayList();
-        spending.addAll(records);
-        return spending;
-    }
-
     // handles clicking buttons of user interface
     @FXML
     public void onButtonClick(ActionEvent event){
@@ -171,8 +164,7 @@ public class Controller implements Initializable {
                     userInput.setText("INVALID INPUT");
                 }
             } catch(NumberFormatException e){
-                System.out.println("ERROR INSERTING RECORD:");
-                e.printStackTrace();
+                System.out.println("ERROR INSERTING RECORD: Input '" + input + "' is invalid");
             }
         }
     }
@@ -181,7 +173,7 @@ public class Controller implements Initializable {
     public void displaySpendingInfo(){
         DecimalFormat df = new DecimalFormat("###,##0.00");
         weekTotal.setText("£" + df.format(Double.valueOf(Spending.calculateWeekTotal(records))));
-        monthTotal.setText("£" + df.format(Double.valueOf(Spending.calculateWeekTotal(records))));
+        monthTotal.setText("£" + df.format(Double.valueOf(Spending.calculateMonthTotal(records))));
 
         foodTotalLabel.setText("FOOD: £" +  df.format(categoryTotals[0]));
         leisureTotalLabel.setText("LEISURE: £" +  df.format(categoryTotals[1]));
@@ -195,6 +187,15 @@ public class Controller implements Initializable {
         categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
         spendingTable.getItems().setAll(fetchRecords(records));
     }
+
+    // creates observable list which will be passed to list view to display in TableView
+    public ObservableList<Spending> fetchRecords(ArrayList<Spending> records){
+        ObservableList<Spending> spending = FXCollections.observableArrayList();
+        spending.addAll(records);
+        return spending;
+    }
+
+
 
     // feeds pie chart data into pie chart
     public void loadPieChart(double[] categoryTotal){
@@ -211,6 +212,5 @@ public class Controller implements Initializable {
         pieChart.setData(pieChartData);
         pieChart.setLegendVisible(false);
     }
-
-
 }
+
