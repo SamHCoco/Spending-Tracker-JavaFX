@@ -1,0 +1,25 @@
+.chart-pie-label {
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+
+.label {
+    -fx-text-fill: white;
+}
+
+.table-view .column-header-background .label{
+    -fx-text-fill: black;
+}
+
+.table-view .column-header {
+    -fx-border-color: black;
+}
+
+#options-buttons {
+    -fx-font-size: 21px;
+    -fx-font-style : italic;
+    -fx-font-weight: bold;
+}
+
+
+
