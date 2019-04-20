@@ -1,5 +1,6 @@
 package tracker;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Spending {
@@ -29,16 +30,18 @@ public class Spending {
         this.amount  = amount;
     }
 
+    // getter for tableview display (displaying amount with currency units)
+    public String getAmount(){ return "£" + amount; }
+
+    // getter for performing calculations with
+    public String getAmount(boolean forCalculation){ return amount; }
+
     public void setCategory(String category){
         this.category = category;
     }
 
     public void setRecordDate(String recordDate){
         this.recordDate = recordDate;
-    }
-
-    public String getAmount(){
-        return amount;
     }
 
     public Date getDate(){
@@ -53,6 +56,7 @@ public class Spending {
         return recordDate;
     }
 
+
     public static String calculateMonthTotal(ArrayList<Spending> records){
         String currentMonth = new Date().formatMonth();
         String month;
@@ -60,7 +64,7 @@ public class Spending {
         for(int i = 0; i < records.size(); i++){
             month = records.get(i).getRecordDate().substring(3, 5);
             if(currentMonth.equals(month)){
-                monthSpendingTotal += Double.valueOf(records.get(i).getAmount());
+                monthSpendingTotal += Double.valueOf(records.get(i).getAmount(true));
             }
         }
         return String.valueOf(monthSpendingTotal);
@@ -76,7 +80,7 @@ public class Spending {
             month = records.get(i).getRecordDate().substring(3, 5);
             weekOfMonth = records.get(i).getDate().getWeekOfMonth();
             if(month.equals(currentMonth) && weekOfMonth == weekOfCurrentMonth){
-                weekTotal += Double.valueOf(records.get(i).getAmount());
+                weekTotal += Double.valueOf(records.get(i).getAmount(true));
             }
         }
         return String.valueOf(weekTotal);
@@ -90,22 +94,22 @@ public class Spending {
             month = records.get(i).getRecordDate().substring(3, 5);
             if(month.equals(currentMonth)){
                 if(records.get(i).getCategory().equals("FOOD")){
-                    totals[0] += Double.valueOf(records.get(i).getAmount());
+                    totals[0] += Double.valueOf(records.get(i).getAmount(true));
 
                 } else if(records.get(i).getCategory().equals("LEISURE")){
-                    totals[1] += Double.valueOf(records.get(i).getAmount());
+                    totals[1] += Double.valueOf(records.get(i).getAmount(true));
 
                 } else if(records.get(i).getCategory().equals("TRANSPORT")){
-                    totals[2] += Double.valueOf(records.get(i).getAmount());
+                    totals[2] += Double.valueOf(records.get(i).getAmount(true));
 
                 } else if(records.get(i).getCategory().equals("CLOTHING")){
-                    totals[3] += Double.valueOf(records.get(i).getAmount());
+                    totals[3] += Double.valueOf(records.get(i).getAmount(true));
 
                 } else if(records.get(i).getCategory().equals("HOUSING")){
-                    totals[4] += Double.valueOf(records.get(i).getAmount());
+                    totals[4] += Double.valueOf(records.get(i).getAmount(true));
 
                 } else if(records.get(i).getCategory().equals("MISC.")){
-                    totals[5] += Double.valueOf(records.get(i).getAmount());
+                    totals[5] += Double.valueOf(records.get(i).getAmount(true));
                 }
             }
         }
@@ -113,10 +117,12 @@ public class Spending {
     }
 
     public static String[] categoryPercents(double[] categoryTotal, double monthTotal){
+        DecimalFormat df = new DecimalFormat("#0");
         String[] result = new String[6];
         for(int i = 0; i < categoryTotal.length ; i++){
-            result[i] = String.format("%.2f", (categoryTotal[i]/monthTotal) * 100);
+            result[i] = df.format((categoryTotal[i]/monthTotal) * 100);
         }
         return result;
     }
 }
+
