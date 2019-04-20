@@ -152,6 +152,6 @@ public class Date {
                 month = "December";
                 break;
         }
-        return day + " " + formatDate() + " " + month + " " + String.valueOf(year);
+        return day + " " + String.valueOf(date) + " " + month + " " + String.valueOf(year);
     }
 }
