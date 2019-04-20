@@ -12,14 +12,11 @@
 }
 
 .table-view .column-header {
-    -fx-border-color: black;
+    -fx-border-color: grey;
+    -fx-background-color: darkgray;
 }
 
 #options-buttons {
-    -fx-font-size: 21px;
-    -fx-font-style : italic;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
-
-
-
