@@ -6,15 +6,14 @@ import java.util.Calendar;
 public class Datasource {
     private Connection connection;
 
-    public static final String DB_NAME = "spending_record.db";
-    public static final String CONNECTION = "jdbc:sqlite:C:\\Users\\User_2\\Desktop\\Java Programs 2\\"
-                                            + "Spending_Tracker\\src\\tracker\\" + DB_NAME;
-    public static final String TABLE_NAME = "spending";
-    public static final String ID_COLUMN = "_id";
-    public static final String DATE_COLUMN = "date";
-    public static final String MONTH_WEEK_COLUMN = "month_week";
-    public static final String AMOUNT_COLUMN = "amount";
-    public static final String CATEGORY_COLUMN = "category";
+    private static final String DB_NAME = "spending_record.db";
+    private static final String CONNECTION = "jdbc:sqlite:" + System.getProperty("user.dir") + "\\" + DB_NAME;
+    private static final String TABLE_NAME = "spending";
+    private static final String ID_COLUMN = "_id";
+    private static final String DATE_COLUMN = "date";
+    private static final String MONTH_WEEK_COLUMN = "month_week";
+    private static final String AMOUNT_COLUMN = "amount";
+    private static final String CATEGORY_COLUMN = "category";
 
     public Datasource(){
         createTable();
@@ -51,8 +50,8 @@ public class Datasource {
         openDatabase();
         try(Statement statement = connection.createStatement()){
             statement.execute("INSERT INTO " + TABLE_NAME + "(" + DATE_COLUMN + ", " + MONTH_WEEK_COLUMN + ", "
-                    + AMOUNT_COLUMN + ", " + CATEGORY_COLUMN + ") VALUES('" + record.getDate().numericDate() + "', " +
-                    record.getDate().getWeekOfMonth() + ", '" + record.getAmount() + "', '" + record.getCategory() + "')");
+                + AMOUNT_COLUMN + ", " + CATEGORY_COLUMN + ") VALUES('" + record.getDate().numericDate() + "', " +
+                record.getDate().getWeekOfMonth() + ", '" + record.getAmount(true) + "', '" + record.getCategory() + "')");
 
         } catch(SQLException e){
             System.out.println("ERROR INSERTING RECORD: " + e.getMessage());
