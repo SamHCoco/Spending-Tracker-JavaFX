@@ -11,6 +11,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -92,16 +93,21 @@ public class Controller implements Initializable {
 
     private static double[] categoryTotals;
 
-
-   // runs when program first initialized
+    /**
+     * Initializes app by displaying date and calling initializeApp() method.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         dateDisplay.setText(new Date().stringDate());
         data = new Datasource();
         initializeApp();
+        userInput.setContextMenu(new ContextMenu()); // disables default context menu
     }
 
-    // re-initializes the application to reflect user created changes
+    /**
+     * Initializes the app to reflect any user created changes.
+     * For example, the app will be re-initialized after the user adds a record to the database.
+     */
     public void initializeApp(){
         data.deleteOlderRecords();
         records = data.querySpending();
@@ -110,30 +116,63 @@ public class Controller implements Initializable {
         loadPieChart(categoryTotals);
     }
 
-    // handles clicking buttons of user interface
+    /**
+     * Handles user clicking any of the button in the UI.
+     * @param event The action event (left-click)
+     */
     @FXML
     public void onButtonClick(ActionEvent event){
+        String newStyle = "-fx-background-color: green; -fx-text-fill: white";
         if(event.getSource() == foodBtn){
             category = "FOOD";
+            revertButtonStyles();
+            foodBtn.setStyle(newStyle);
         } else if(event.getSource() == leisureBtn){
             category = "LEISURE";
+            revertButtonStyles();
+            leisureBtn.setStyle(newStyle);
         } else if(event.getSource() == transportBtn){
             category = "TRANSPORT";
+            revertButtonStyles();
+            transportBtn.setStyle(newStyle);
         } else if(event.getSource() == clothingBtn){
             category = "CLOTHING";
+            revertButtonStyles();
+            clothingBtn.setStyle(newStyle);
         } else if(event.getSource() == housingBtn){
             category = "HOUSING";
+            revertButtonStyles();
+            housingBtn.setStyle(newStyle);
         } else if(event.getSource() == miscBtn){
             category = "MISC.";
+            revertButtonStyles();
+            miscBtn.setStyle(newStyle);
         }
         // inserts record and updates pie chart display
         if(event.getSource() == enterBtn && category != null){
             insertRecord();
             initializeApp();
+            revertButtonStyles();
         }
     }
 
-    // handles deleting record when clicking TableView 'Delete' menu item
+    /**
+     * Reverts category buttons back to their original style: lightgray background and black text fill.
+     */
+    public void revertButtonStyles(){
+        String style = "-fx-background-color: lightgray; -fx-text-fill: black";
+        foodBtn.setStyle(style);
+        leisureBtn.setStyle(style);
+        transportBtn.setStyle(style);
+        clothingBtn.setStyle(style);
+        housingBtn.setStyle(style);
+        miscBtn.setStyle(style);
+    }
+
+    /**
+     * Handles deleting record when TableView 'Delete' menu item is left-clicked.
+     * @param event The action event that triggers the method (clicking 'Delete' menu item)
+     */
     @FXML
     public void onMenuItemClick(ActionEvent event){
         if(event.getSource() == deleteOption){
@@ -145,11 +184,19 @@ public class Controller implements Initializable {
         }
     }
 
-    // deletes a single row in database table
+    /**
+     * Deletes a single row in database table.
+     * @param _id The ID of the record entry to be deleted from database spending table.
+     */
     public void deleteRecord(int _id){
         data.deleteRecord(_id);
     }
 
+    /**
+     * Inserts a single record into database spending table based on user input into text field.
+     * The inputted by use must be below £100,000 or the record will not be added.
+     * To be inserted, the amount inputted must also keep total spending below the max of £100,000.
+     */
     public void insertRecord(){
         double total = Double.valueOf(Spending.calculateMonthTotal(records));
         String input = userInput.getText();
@@ -159,7 +206,8 @@ public class Controller implements Initializable {
                 if(inputValue > 0 && inputValue <= 100_000 && total + inputValue <= 100_000){
                     data.insertRecord(new Spending(String.format("%.2f", inputValue), category));
                     displaySpendingInfo();
-                    category = null; // to wait for users next choice
+                    category = null; // to wait for user's next choice
+                    userInput.setText("");
                 } else {
                     userInput.setText("INVALID INPUT");
                 }
@@ -169,7 +217,10 @@ public class Controller implements Initializable {
         }
     }
 
-    // displays summary statistics of spending to the user
+    /**
+     * Displays spending records and summary statistics of spending to the user. The summary statistics are:
+     * Total week spending, total month spending, total month spending for each category.
+     */
     public void displaySpendingInfo(){
         DecimalFormat df = new DecimalFormat("###,##0.00");
         weekTotal.setText("£" + df.format(Double.valueOf(Spending.calculateWeekTotal(records))));
@@ -188,7 +239,11 @@ public class Controller implements Initializable {
         spendingTable.getItems().setAll(fetchRecords(records));
     }
 
-    // creates observable list which will be passed to list view to display in TableView
+    /**
+     * Creates ObservableList of records which will be passed to TableView for display.
+     * @param records Database spending table records
+     * @return ObservableList of all spending records
+     */
     public ObservableList<Spending> fetchRecords(ArrayList<Spending> records){
         ObservableList<Spending> spending = FXCollections.observableArrayList();
         spending.addAll(records);
@@ -196,8 +251,10 @@ public class Controller implements Initializable {
     }
 
 
-
-    // feeds pie chart data into pie chart
+    /**
+     * Feeds pie chart data into pie chart.
+     * @param categoryTotal The total amount spent on each category for the current month
+     */
     public void loadPieChart(double[] categoryTotal){
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
         String[] category = {"FOOD", "LEISURE", "TRANSPORT", "CLOTHING", "HOUSING", "MISC."};
