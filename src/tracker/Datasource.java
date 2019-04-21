@@ -15,50 +15,65 @@ public class Datasource {
     private static final String AMOUNT_COLUMN = "amount";
     private static final String CATEGORY_COLUMN = "category";
 
+    /**
+     * Constructor for datasource. Creates 'spending' table.
+     */
     public Datasource(){
         createTable();
     }
 
 
-    // Connects to database
+    /**
+     * Creates a connection to the database in the directory specified
+     * in the 'CONNECTION' variable, which is set to the working directory
+     * of the program.
+     */
     public void openDatabase(){
         try{
             connection = DriverManager.getConnection(CONNECTION);
         } catch(SQLException e){
             System.out.println("ERROR OPENING DATABASE: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
-    // creates table in database if one does not exist
+    /**
+     * Creates a 'spending' table in the database if one does not exist, with five columns.
+     *  Table columns: ID, Date (the current date), Week of the Month, Amount (the amount, in £, spent)
+     *  and Category (the category the spending falls under).
+     */
     public void createTable(){
         openDatabase();
         try(Statement statement = connection.createStatement()){
-//            statement.execute("DROP TABLE " + TABLE_NAME); // FOR DEBUGGING
+            // CREATE TABLE IF NOT EXISTS
+            // spending(_id INTEGER PRIMARY KEY, date TEXT, month_week INTEGER, amount TEXT, category TEXT)
             statement.execute("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(" + ID_COLUMN +
                     " INTEGER PRIMARY KEY, " + DATE_COLUMN + " TEXT, " + MONTH_WEEK_COLUMN + " INTEGER, " + AMOUNT_COLUMN
                     + " TEXT, " + CATEGORY_COLUMN + " TEXT)");
-
         } catch(SQLException e){
             System.out.println("ERROR CREATING TABLE " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
-    // Inserts a record (row) into the spending = table
+    /**
+     * Inserts a single record into the database spending table.
+     * @param record The record to be inserted, which is represented as a single Spending object.
+     */
     public void insertRecord(Spending record){
         openDatabase();
         try(Statement statement = connection.createStatement()){
+            // INSERT INTO spending(date, month_week, amount, category) VALUES('date', month_week, "£#.##", 'category')
             statement.execute("INSERT INTO " + TABLE_NAME + "(" + DATE_COLUMN + ", " + MONTH_WEEK_COLUMN + ", "
                 + AMOUNT_COLUMN + ", " + CATEGORY_COLUMN + ") VALUES('" + record.getDate().numericDate() + "', " +
                 record.getDate().getWeekOfMonth() + ", '" + record.getAmount(true) + "', '" + record.getCategory() + "')");
-
         } catch(SQLException e){
             System.out.println("ERROR INSERTING RECORD: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
+    /**
+     * Deletes a single record in the database spending table, specified by the _id parameter
+     * @param _id The ID of the record to be deleted.
+     */
     public void deleteRecord(int _id){
         openDatabase();
         try(Statement statement = connection.createStatement()){
@@ -80,7 +95,11 @@ public class Datasource {
         }
     }
 
-    // Fetches records to display to user
+    /**
+     * Queries the database for records and returns all records as an ArrayList of Spending objects.
+     * Each spending object is a single entry of the database.
+     * @return An ArrayList of all records in the database.
+     */
     public ArrayList<Spending> querySpending(){
         ArrayList<Spending> spendings = new ArrayList<>();
         openDatabase();
@@ -103,7 +122,11 @@ public class Datasource {
         }
     }
 
-    // deletes older unnecessary records
+    /**
+     * Deletes all spending records up to any records created in the last week of
+     * the previous month. For example, if the current month is August the method will
+     * deletes all records prior to the last week of July.
+     */
     public void deleteOlderRecords(){
         openDatabase();
         try(Statement statement = connection.createStatement()){
