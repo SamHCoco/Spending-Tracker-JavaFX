@@ -10,16 +10,27 @@ public class Date {
     private int weekOfMonth;
     private String numericDate;
 
+    /**
+     * Constructor user for querying records.
+     * @param weekOfMonth The week of the month the record entry was created
+     */
     public Date(int weekOfMonth){
         this.weekOfMonth = weekOfMonth;
     }
 
-    // constructor used in algorithm for automatically deleting records
+    /**
+     * Constructor for automatically deleting records.
+     * @param numericDate The date of a spending table entry in numeric format: ##-##-##
+     * @param weekOfMonth The week of the month the record entry was created
+     */
     public Date(String numericDate, int weekOfMonth){
         this.numericDate = numericDate;
         this.weekOfMonth = weekOfMonth;
     }
 
+    /**
+     * Constructor for date object.
+     */
     public Date(){
         Calendar calendar = Calendar.getInstance();
         day = calendar.get(Calendar.DAY_OF_WEEK);
@@ -32,7 +43,7 @@ public class Date {
 
     /**
      * Get the week of the current month.
-     * @return week (1 - 4) of current month
+     * @return Week of current month [1 - 4]
      */
     public int getWeekOfMonth(){
         return weekOfMonth;
@@ -40,7 +51,7 @@ public class Date {
 
     /**
      * Ensures single digit months have 0# format.
-     * @return a single digit month in 0# format, e.g. 08
+     * @return A single digit month in 0# format, e.g. 08
      */
     public String formatMonth(){
         String month = String.valueOf(this.month);
@@ -52,7 +63,7 @@ public class Date {
 
     /**
      * Ensures single digit dates have 0# format.
-     * @return  a single digit date in 0# format, e.g. 03 etc
+     * @return  A single digit date in 0# format, e.g. 03 etc
      */
     public String formatDate(){
         String date = String.valueOf(this.date);
@@ -64,14 +75,14 @@ public class Date {
 
     /**
      * Get the current date in a numerical format.
-     * @return current date as a string, in numerical format, e.g 03-04-2019
+     * @return Current date as a string, in numerical format, e.g 03-04-2019
      */
     public String numericDate(){
         return formatDate() + "-" +  formatMonth() + "-" + year;
     }
 
     /**
-     * String slices numeric date (e.g. 20-06-17) to extract the month
+     * Gets substring numeric date (e.g. 20-06-17) to extract the month.
      * @return Month of a numeric date (e.g. 6 if numericDate = 20-06-17)
      */
     public Integer numericDateMonth(){
@@ -83,7 +94,7 @@ public class Date {
     }
 
     /**
-     * Get the current date in format:  Day of week/ date/ month/ year.
+     * Get the current date in format:  Day of Week/Date/Month/Year.
      * @return current date in non-numeric format e.g. Monday 25 March 2018
      */
     public String stringDate(){
