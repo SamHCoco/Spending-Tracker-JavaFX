@@ -64,7 +64,7 @@
 
 
         <Button fx:id="enterBtn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                onAction="#onButtonClick" style="-fx-font-size: 16px;" text="Enter" GridPane.columnIndex="2"
+                onAction="#onButtonClick" style="-fx-font-size: 23px;" text="Enter" GridPane.columnIndex="2"
                 GridPane.rowIndex="1"/>
         <Button fx:id="foodBtn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
                 onAction="#onButtonClick" text="FOOD" GridPane.columnIndex="0" GridPane.rowIndex="2"
@@ -91,8 +91,7 @@
             <contextMenu>
                 <ContextMenu>
                     <items>
-                        <MenuItem fx:id="deleteOption" onAction="#onMenuItemClick"
-                                  style="-fx-font-size: 14px" text="Delete" />
+                        <MenuItem fx:id="deleteOption" onAction="#onMenuItemClick" text="Delete Entry" />
                     </items>
                 </ContextMenu>
             </contextMenu>
