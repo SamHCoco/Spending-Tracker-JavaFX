@@ -1,5 +1,6 @@
 package tracker;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -151,23 +152,26 @@ public class Spending {
         for(int i = 0; i < records.size(); i++){
             month = records.get(i).getRecordDate().substring(3, 5);
             if(month.equals(currentMonth)){
-                if(records.get(i).getCategory().equals("FOOD")){
-                    totals[0] += Double.valueOf(records.get(i).getAmount(true));
+                String category = records.get(i).getCategory();
+                double amount = Double.valueOf(records.get(i).getAmount(true));
 
-                } else if(records.get(i).getCategory().equals("LEISURE")){
-                    totals[1] += Double.valueOf(records.get(i).getAmount(true));
+                if(category.equals("FOOD")){
+                    totals[0] += amount;
 
-                } else if(records.get(i).getCategory().equals("TRANSPORT")){
-                    totals[2] += Double.valueOf(records.get(i).getAmount(true));
+                } else if(category.equals("LEISURE")){
+                    totals[1] += amount;
 
-                } else if(records.get(i).getCategory().equals("CLOTHING")){
-                    totals[3] += Double.valueOf(records.get(i).getAmount(true));
+                } else if(category.equals("TRANSPORT")){
+                    totals[2] += amount;
 
-                } else if(records.get(i).getCategory().equals("HOUSING")){
-                    totals[4] += Double.valueOf(records.get(i).getAmount(true));
+                } else if(category.equals("CLOTHING")){
+                    totals[3] += amount;
 
-                } else if(records.get(i).getCategory().equals("MISC.")){
-                    totals[5] += Double.valueOf(records.get(i).getAmount(true));
+                } else if(category.equals("HOUSING")){
+                    totals[4] += amount;
+
+                } else if(category.equals("MISC.")){
+                    totals[5] += amount;
                 }
             }
         }
@@ -182,12 +186,17 @@ public class Spending {
      * @return The amounts spent on each category, as a percentage of total spending
      */
     public static String[] categoryPercents(double[] categoryTotals, double monthTotal){
-        DecimalFormat df = new DecimalFormat("#0");
+        DecimalFormat df1 = new DecimalFormat("#0.0");
+        DecimalFormat df2 = new DecimalFormat("#0");
+        df1.setRoundingMode(RoundingMode.HALF_UP);
+        String formattedResult;
+        double percent;
         String[] result = new String[6];
         for(int i = 0; i < categoryTotals.length ; i++){
-            result[i] = df.format((categoryTotals[i]/monthTotal) * 100);
+            percent = (categoryTotals[i]/monthTotal) * 100;
+            formattedResult = df2.format(Double.valueOf(df1.format(percent)));
+            result[i] = formattedResult;
         }
         return result;
     }
 }
-
