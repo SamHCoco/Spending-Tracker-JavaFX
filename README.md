@@ -31,5 +31,5 @@ The application currently has **6 categories** of spending:
  On the bottom-left is a summary of much was spent in the month on each category:
 
  <p align="center">
-    ![](TotalsDemo.png)
+    <img src="TotalsDemo.png"/>
  </p>
