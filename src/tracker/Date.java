@@ -43,7 +43,7 @@ public class Date {
 
     /**
      * Get the week of the current month.
-     * @return Week of current month [1 - 4]
+     * @return Week of current month [1 - 5]
      */
     public int getWeekOfMonth(){
         return weekOfMonth;
