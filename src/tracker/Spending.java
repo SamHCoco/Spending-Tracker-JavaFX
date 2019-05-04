@@ -125,16 +125,28 @@ public class Spending {
      * @return The total amount spent in the current week
      */
     public static String calculateWeekTotal(ArrayList<Spending> records){
-        String currentMonth = new Date().formatMonth();
-        String month;
+        int recordMonth;
+        int recordWeekOfMonth;
         int weekOfCurrentMonth = new Date().getWeekOfMonth();
-        int weekOfMonth;
+        int priorMonth;
+        int currentMonth = Integer.valueOf(new Date().formatMonth());
+        if(currentMonth == 1){
+            priorMonth = 12;
+        } else {
+            priorMonth = currentMonth - 1;
+        }
         Double weekTotal = 0.00;
         for(int i = 0; i < records.size(); i++){
-            month = records.get(i).getRecordDate().substring(3, 5);
-            weekOfMonth = records.get(i).getDate().getWeekOfMonth();
-            if(month.equals(currentMonth) && weekOfMonth == weekOfCurrentMonth){
-                weekTotal += Double.valueOf(records.get(i).getAmount(true));
+            recordMonth = Integer.valueOf(records.get(i).getRecordDate().substring(3, 5));
+            recordWeekOfMonth = records.get(i).getDate().getWeekOfMonth();
+            if(recordMonth == currentMonth){
+                if(recordWeekOfMonth == weekOfCurrentMonth){
+                    weekTotal += Double.valueOf(records.get(i).getAmount(true));
+                }
+            }else if(recordMonth == priorMonth){
+                if(weekOfCurrentMonth == 1 && recordWeekOfMonth == 5){
+                    weekTotal += Double.valueOf(records.get(i).getAmount(true));
+                }
             }
         }
         return String.valueOf(weekTotal);
